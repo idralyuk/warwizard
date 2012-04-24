@@ -5,7 +5,6 @@ import com.yammer.dropwizard.json.Json;
 import com.yammer.dropwizard.logging.Log;
 import com.yammer.dropwizard.validation.Validator;
 import org.codehaus.jackson.JsonProcessingException;
-import org.eclipse.jetty.io.EofException;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -17,6 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -131,7 +131,7 @@ public class JacksonMessageBodyProvider implements MessageBodyReader<Object>,
                         OutputStream entityStream) throws IOException, WebApplicationException {
         try {
             json.writeValue(entityStream, t);
-        } catch (EofException ignored) {
+        } catch (EOFException ignored) {
             // we don't care about these
         } catch (IOException e) {
             LOG.error(e, "Error writing response");

@@ -42,25 +42,11 @@ import javax.validation.constraints.NotNull;
  */
 @SuppressWarnings("FieldMayBeFinal")
 public class Configuration {
-    @Valid
-    @NotNull
-    @JsonProperty
-    private HttpConfiguration http = new HttpConfiguration();
 
     @Valid
     @NotNull
     @JsonProperty
     private LoggingConfiguration logging = new LoggingConfiguration();
-
-    /**
-     * Returns the HTTP-specific section of the configuration file.
-     *
-     * @return HTTP-specific configuration parameters
-     */
-    public HttpConfiguration getHttpConfiguration() {
-        return http;
-    }
-
     /**
      * Returns the logging-specific section of the configuration file.
      *

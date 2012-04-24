@@ -11,12 +11,6 @@ public class ConfigurationTest {
     private final Configuration configuration = new Configuration();
 
     @Test
-    public void hasAnHttpConfiguration() throws Exception {
-        assertThat(configuration.getHttpConfiguration(),
-                   is(notNullValue()));
-    }
-
-    @Test
     public void hasALoggingConfiguration() throws Exception {
         assertThat(configuration.getLoggingConfiguration(),
                    is(notNullValue()));
