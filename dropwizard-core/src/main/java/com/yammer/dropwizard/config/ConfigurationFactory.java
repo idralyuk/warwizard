@@ -1,7 +1,9 @@
 package com.yammer.dropwizard.config;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.Resources;
 import com.yammer.dropwizard.json.Json;
 import com.yammer.dropwizard.validation.Validator;
 import org.codehaus.jackson.JsonNode;
@@ -10,7 +12,12 @@ import org.codehaus.jackson.map.Module;
 import org.codehaus.jackson.node.ObjectNode;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -23,7 +30,11 @@ public class ConfigurationFactory<T> {
     }
 
     public static <T> ConfigurationFactory<T> forClass(Class<T> klass, Validator validator) {
-        return new ConfigurationFactory<T>(klass, validator, ImmutableList.<Module>of());
+        return forClass(klass, validator, ImmutableList.<Module>of());
+    }
+
+    public static <T> ConfigurationFactory<T> forClass(Class<T> klass) {
+        return forClass(klass, new Validator());
     }
 
     private final Class<T> klass;
@@ -39,9 +50,19 @@ public class ConfigurationFactory<T> {
         }
         this.validator = validator;
     }
+
+    public T build(String classpathLocation) throws IOException, ConfigurationException {
+        URL resource = Resources.getResource(klass, classpathLocation);
+        InputStream in = resource.openConnection().getInputStream();
+        return build(new InputStreamReader(in, Charsets.UTF_8), resource.toString());
+    }
     
     public T build(File file) throws IOException, ConfigurationException {
-        final JsonNode node = parse(file);
+        return build(new InputStreamReader(new FileInputStream(file), Charsets.UTF_8), file.getAbsolutePath());
+    }
+
+    private T build(Reader reader, String location) throws IOException, ConfigurationException{
+        final JsonNode node = parse(reader, location);
         for (Map.Entry<Object, Object> pref : System.getProperties().entrySet()) {
             final String prefName = (String) pref.getKey();
             if (prefName.startsWith(PROPERTY_PREFIX)) {
@@ -50,8 +71,9 @@ public class ConfigurationFactory<T> {
             }
         }
         final T config = json.readValue(node, klass);
-        validate(file, config);
+        validate(location, config);
         return config;
+
     }
 
     private void addOverride(JsonNode root, String name, String value) {
@@ -77,17 +99,17 @@ public class ConfigurationFactory<T> {
         }
     }
 
-    private JsonNode parse(File file) throws IOException {
-        if (file.getName().endsWith(".yaml") || file.getName().endsWith(".yml")) {
-            return json.readYamlValue(file, JsonNode.class);
+    private JsonNode parse(Reader reader, String location) throws IOException {
+        if (location.endsWith(".yaml") || location.endsWith(".yml")) {
+            return json.readYamlValue(reader, location, JsonNode.class);
         }
-        return json.readValue(file, JsonNode.class);
+        return json.readValue(reader, JsonNode.class);
     }
 
-    private void validate(File file, T config) throws ConfigurationException {
+    private void validate(String location, T config) throws ConfigurationException {
         final ImmutableList<String> errors = validator.validate(config);
         if (!errors.isEmpty()) {
-            throw new ConfigurationException(file, errors);
+            throw new ConfigurationException(location, errors);
         }
     }
 }

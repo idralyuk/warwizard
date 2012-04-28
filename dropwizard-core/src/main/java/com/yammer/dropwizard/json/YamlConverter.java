@@ -20,14 +20,17 @@ class YamlConverter {
     }
 
     JsonNode convert(File file) throws IOException {
+        return convert(new InputStreamReader(new FileInputStream(file), Charsets.UTF_8), file.toString());
+    }
+
+    JsonNode convert(Reader reader, String location) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         final JsonGenerator generator = factory.createJsonGenerator(output).useDefaultPrettyPrinter();
-        final Reader reader = new InputStreamReader(new FileInputStream(file), Charsets.UTF_8);
         try {
             final Node yaml = new org.yaml.snakeyaml.Yaml().compose(reader);
             build(yaml, generator);
             generator.close();
-            LOG.debug("Parsed {} as:\n {}", file, output.toString());
+            LOG.debug("Parsed {} as:\n {}", location, output.toString());
             return json.readValue(output.toByteArray(), JsonNode.class);
         } finally {
             reader.close();

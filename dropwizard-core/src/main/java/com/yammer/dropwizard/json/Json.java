@@ -524,6 +524,22 @@ public class Json {
         return mapper.readValue(converter.convert(src), valueTypeRef);
     }
 
+    /**
+     * Deserializes the given YAML {@link Reader} as an instance of the given type.
+     * <p><b>N.B.:</b> All tags, comments, and non-JSON elements of the YAML file will be elided.</p>
+     *
+     * @param reader       a YAML {@link Reader}. Will be closed after this method completes
+     * @param location     the location where the Reader was obtained. Used in error messages.
+     * @param valueType    the {@link Class} to deserialize {@code src} as
+     * @param <T>          the type of {@code valueType}
+     * @return the contents of {@code src} as an instance of {@code T}
+     * @throws IOException if there is an error reading from {@code src} or parsing its contents
+     */
+    public <T> T readYamlValue(Reader reader, String location, Class<T> valueType) throws IOException {
+        final YamlConverter converter = new YamlConverter(this, factory);
+        return mapper.readValue(converter.convert(reader, location), valueType);
+    }
+
     private JavaType constructType(Type type) {
         return typeFactory.constructType(type);
     }

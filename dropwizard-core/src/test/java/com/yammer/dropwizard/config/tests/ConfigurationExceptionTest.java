@@ -6,17 +6,17 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.assertThat;
 
 public class ConfigurationExceptionTest {
     @Test
     public void formatsTheViolationsIntoAHumanReadableMessage() throws Exception {
         final File file = new File("config.yml");
-        final ConfigurationException e = new ConfigurationException(file, ImmutableList.of("woo may not be null"));
+        final ConfigurationException e = new ConfigurationException(file.getAbsolutePath(), ImmutableList.of("woo may not be null"));
 
         assertThat(e.getMessage(),
-                   is("config.yml has the following errors:\n" +
-                      "  * woo may not be null\n"));
+                   endsWith("config.yml has the following errors:\n" +
+                           "  * woo may not be null\n"));
     }
 }

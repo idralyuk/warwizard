@@ -1,7 +1,5 @@
 package com.yammer.dropwizard.config;
 
-import java.io.File;
-
 /**
  * An exception thrown where there is an error parsing a configuration object.
  */
@@ -11,15 +9,15 @@ public class ConfigurationException extends Exception {
     /**
      * Creates a new {@link ConfigurationException} for the given file with the given errors.
      *
-     * @param file      the bad configuration file
+     * @param location  the location of the bad configuration file
      * @param errors    the errors in the file
      */
-    public ConfigurationException(File file, Iterable<String> errors) {
-        super(formatMessage(file, errors));
+    public ConfigurationException(String location, Iterable<String> errors) {
+        super(formatMessage(location, errors));
     }
 
-    private static String formatMessage(File file, Iterable<String> errors) {
-        final StringBuilder msg = new StringBuilder(file.toString())
+    private static String formatMessage(String location, Iterable<String> errors) {
+        final StringBuilder msg = new StringBuilder(location)
                 .append(" has the following errors:\n");
         for (String error : errors) {
             msg.append("  * ").append(error).append('\n');
