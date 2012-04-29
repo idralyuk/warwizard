@@ -1,5 +1,6 @@
 package com.yammer.dropwizard.jersey;
 
+import com.google.inject.Singleton;
 import com.yammer.dropwizard.logging.Log;
 import org.skife.jdbi.v2.exceptions.DBIException;
 
@@ -10,6 +11,7 @@ import java.sql.SQLException;
  * Iterates through a DBIException's cause if it's a SQLException otherwise log as normal.
  */
 @Provider
+@Singleton
 public class LoggingDBIExceptionMapper extends LoggingExceptionMapper<DBIException> {
     private static final Log LOG = Log.forClass(LoggingDBIExceptionMapper.class);
 

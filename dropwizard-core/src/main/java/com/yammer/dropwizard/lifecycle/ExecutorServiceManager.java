@@ -15,11 +15,6 @@ public class ExecutorServiceManager implements Managed {
     }
 
     @Override
-    public void start() throws Exception {
-        // OK BOSS
-    }
-
-    @Override
     public void stop() throws Exception {
         executor.shutdown();
         executor.awaitTermination(shutdownPeriod, unit);

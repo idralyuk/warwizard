@@ -2,11 +2,12 @@ package com.yammer.dropwizard.db.tests;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import com.yammer.dropwizard.config.Environment;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.yammer.dropwizard.config.LoggingFactory;
 import com.yammer.dropwizard.db.Database;
 import com.yammer.dropwizard.db.DatabaseConfiguration;
-import com.yammer.dropwizard.db.DatabaseFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +21,6 @@ import java.sql.Types;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 public class DatabaseTest {
     private final DatabaseConfiguration hsqlConfig = new DatabaseConfiguration();
@@ -32,13 +31,17 @@ public class DatabaseTest {
         hsqlConfig.setDriverClass("org.hsqldb.jdbcDriver");
         hsqlConfig.setValidationQuery("SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS");
     }
-    private final Environment environment = mock(Environment.class);
-    private final DatabaseFactory factory = new DatabaseFactory(environment);
+    private final Injector injector = Guice.createInjector(new AbstractModule() {
+        @Override
+        protected void configure() {
+            bind(DatabaseConfiguration.class).toInstance(hsqlConfig);
+        }
+    });
     private Database database;
 
     @Before
     public void setUp() throws Exception {
-        this.database = factory.build(hsqlConfig, "hsql");
+        this.database = injector.getInstance(Database.class);
         final Handle handle = database.open();
         try {
             handle.createCall("DROP TABLE people IF EXISTS").invoke();
@@ -83,13 +86,6 @@ public class DatabaseTest {
         } finally {
             handle.close();
         }
-    }
-
-    @Test
-    public void managesTheDatabaseWithTheEnvironment() throws Exception {
-        final Database db = factory.build(hsqlConfig, "hsql");
-
-        verify(environment).manage(db);
     }
 
     @Test

@@ -10,7 +10,9 @@ import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.yammer.dropwizard.config.Configuration;
 import com.yammer.dropwizard.config.ConfigurationFactory;
 import com.yammer.dropwizard.config.LoggingFactory;
+import com.yammer.dropwizard.lifecycle.Lifecycle;
 
+import javax.servlet.ServletContextEvent;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
 
@@ -18,6 +20,7 @@ public abstract class AbstractService<T extends Configuration> extends GuiceServ
     static {
         LoggingFactory.bootstrap();
     }
+
 
     protected abstract String getConfigurationLocation();
 
@@ -38,6 +41,7 @@ public abstract class AbstractService<T extends Configuration> extends GuiceServ
         return Guice.createInjector(Iterables.concat(Collections.singletonList(new JerseyServletModule() {
             @Override
             protected void configureServlets() {
+                bind(Lifecycle.class).toInstance(lifecycle);
                 bind(getConfigurationClass()).toInstance(conf);
                 serve("/*").with(GuiceContainer.class);
             }
@@ -45,4 +49,12 @@ public abstract class AbstractService<T extends Configuration> extends GuiceServ
     }
 
     protected abstract Iterable<Module> createModules(T configuration);
+
+    @Override
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        lifecycle.stop();
+        super.contextDestroyed(servletContextEvent);
+    }
+
+    private final Lifecycle lifecycle = new Lifecycle();
 }
