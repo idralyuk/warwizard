@@ -10,6 +10,7 @@ import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.yammer.dropwizard.config.Configuration;
 import com.yammer.dropwizard.config.ConfigurationFactory;
 import com.yammer.dropwizard.config.LoggingFactory;
+import com.yammer.dropwizard.jersey.DropwizardGuiceContainer;
 import com.yammer.dropwizard.lifecycle.Lifecycle;
 
 import javax.servlet.ServletContextEvent;
@@ -20,7 +21,6 @@ public abstract class AbstractService<T extends Configuration> extends GuiceServ
     static {
         LoggingFactory.bootstrap();
     }
-
 
     protected abstract String getConfigurationLocation();
 
@@ -41,6 +41,7 @@ public abstract class AbstractService<T extends Configuration> extends GuiceServ
         return Guice.createInjector(Iterables.concat(Collections.singletonList(new JerseyServletModule() {
             @Override
             protected void configureServlets() {
+                bind(GuiceContainer.class).to(DropwizardGuiceContainer.class);
                 bind(Lifecycle.class).toInstance(lifecycle);
                 bind(getConfigurationClass()).toInstance(conf);
                 serve("/*").with(GuiceContainer.class);
