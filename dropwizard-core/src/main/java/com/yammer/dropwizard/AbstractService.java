@@ -15,6 +15,7 @@ import com.yammer.dropwizard.lifecycle.Lifecycle;
 
 import javax.servlet.ServletContextEvent;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collections;
 
 public abstract class AbstractService<T extends Configuration> extends GuiceServletContextListener {
@@ -25,8 +26,27 @@ public abstract class AbstractService<T extends Configuration> extends GuiceServ
     protected abstract String getConfigurationLocation();
 
     @SuppressWarnings("unchecked")
-    protected Class<T> getConfigurationClass() {
-        return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    protected Class<T> getConfigurationClass() {Type t = getClass();
+        while (t instanceof Class<?>) {
+            t = ((Class<?>) t).getGenericSuperclass();
+        }
+        /* This is not guaranteed to work for all cases with convoluted piping
+         * of type parameters: but it can at least resolve straight-forward
+         * extension with single type parameter (as per [Issue-89]).
+         * And when it fails to do that, will indicate with specific exception.
+         */
+        if (t instanceof ParameterizedType) {
+            // should typically have one of type parameters (first one) that matches:
+            for (Type param : ((ParameterizedType) t).getActualTypeArguments()) {
+                if (param instanceof Class<?>) {
+                    Class<?> cls = (Class<?>) param;
+                    if (Configuration.class.isAssignableFrom(cls)) {
+                        return (Class<T>) cls;
+                    }
+                }
+            }
+        }
+        throw new IllegalStateException("Can not figure out Configuration type parameterization for "+getClass().getName());
     }
 
     @Override

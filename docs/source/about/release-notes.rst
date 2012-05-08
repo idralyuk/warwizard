@@ -4,10 +4,18 @@
 Release Notes
 #############
 
+.. _rel-0.4.1:
+
+v0.4.1-SNAPSHOT
+===============
+
+* Fixed type parameter resolution in for subclasses of subclasses of ``ConfiguredCommand``.
+
+
 .. _rel-0.4.0:
 
-v0.4.0-SNAPSHOT
-===============
+v0.4.0: May 1 2012
+==================
 
 * Switched logging from Log4j__ to Logback__.
 
@@ -31,7 +39,7 @@ v0.4.0-SNAPSHOT
 * Upgraded to Jackson 1.9.6.
 * Improved syslog logging.
 * Fixed template paths for views.
-* Upgraded to Guava 12.0 RC2.
+* Upgraded to Guava 12.0.
 * Added support for deserializing ``CacheBuilderSpec`` instances from JSON/YAML.
 * Switched ``AssetsBundle`` and servlet to using cache builder specs.
 * Switched ``CachingAuthenticator`` to using cache builder specs.
