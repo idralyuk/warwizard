@@ -1,8 +1,10 @@
 package com.yammer.dropwizard.auth.basic.tests;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.api.core.HttpRequestContext;
+import com.sun.jersey.core.util.Base64;
 import com.sun.jersey.server.impl.inject.AbstractHttpContextInjectable;
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.dropwizard.auth.AuthenticationException;
@@ -10,7 +12,6 @@ import com.yammer.dropwizard.auth.Authenticator;
 import com.yammer.dropwizard.auth.User;
 import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.auth.basic.BasicCredentials;
-import org.eclipse.jetty.util.B64Code;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -128,7 +129,7 @@ public class BasicAuthInjectableTest {
 
     @Test
     public void requiredAuthWithMalformedCredsReturnsUnauthorized() throws Exception {
-        when(requestContext.getHeaderValue("Authorization")).thenReturn("Basic " + B64Code.encode("poops"));
+        when(requestContext.getHeaderValue("Authorization")).thenReturn(makeAuthorization("poops"));
 
         try {
             required.getValue(context);
@@ -140,7 +141,7 @@ public class BasicAuthInjectableTest {
 
     @Test
     public void optionalAuthWithMalformedCredsReturnsNull() throws Exception {
-        when(requestContext.getHeaderValue("Authorization")).thenReturn("Basic " + B64Code.encode("poops"));
+        when(requestContext.getHeaderValue("Authorization")).thenReturn(makeAuthorization("poops"));
 
         assertThat(optional.getValue(context),
                    is(nullValue()));
@@ -180,7 +181,7 @@ public class BasicAuthInjectableTest {
 
     @Test
     public void requiredAuthWithBadCredsReturnsUnauthorized() throws Exception {
-        when(requestContext.getHeaderValue("Authorization")).thenReturn("Basic " + B64Code.encode("dude:mop"));
+        when(requestContext.getHeaderValue("Authorization")).thenReturn(makeAuthorization("dude:mop"));
 
         try {
             required.getValue(context);
@@ -192,7 +193,7 @@ public class BasicAuthInjectableTest {
 
     @Test
     public void optionalAuthWithBadCredsReturnsNull() throws Exception {
-        when(requestContext.getHeaderValue("Authorization")).thenReturn("Basic " + B64Code.encode("dude:mop"));
+        when(requestContext.getHeaderValue("Authorization")).thenReturn(makeAuthorization("dude:mop"));
 
         assertThat(optional.getValue(context),
                    is(nullValue()));
@@ -200,7 +201,7 @@ public class BasicAuthInjectableTest {
 
     @Test
     public void requiredAuthWithGoodCredsReturnsAUser() throws Exception {
-        when(requestContext.getHeaderValue("Authorization")).thenReturn("Basic " + B64Code.encode("dude:good"));
+        when(requestContext.getHeaderValue("Authorization")).thenReturn(makeAuthorization("dude:good"));
 
         assertThat(required.getValue(context),
                    is(new User("dude")));
@@ -208,14 +209,14 @@ public class BasicAuthInjectableTest {
 
     @Test
     public void optionalAuthWithGoodCredsReturnsAUser() throws Exception {
-        when(requestContext.getHeaderValue("Authorization")).thenReturn("Basic " + B64Code.encode("dude:good"));
+        when(requestContext.getHeaderValue("Authorization")).thenReturn(makeAuthorization("dude:good"));
 
         assertThat(optional.getValue(context),
                    is(new User("dude")));
     }
     @Test
     public void authenticatorFailureReturnsInternalServerError() throws Exception {
-        when(requestContext.getHeaderValue("Authorization")).thenReturn("Basic " + B64Code.encode("dude:bad"));
+        when(requestContext.getHeaderValue("Authorization")).thenReturn(makeAuthorization("dude:bad"));
 
         try {
             required.getValue(context);
@@ -224,6 +225,10 @@ public class BasicAuthInjectableTest {
             assertThat(e.getResponse().getStatus(),
                        is(500));
         }
+    }
+
+    private static String makeAuthorization(String credentials) {
+        return "Basic " + new String(Base64.encode((credentials).getBytes(Charsets.ISO_8859_1)), Charsets.ISO_8859_1);
     }
 
     private void assertUnauthorized(WebApplicationException e) {

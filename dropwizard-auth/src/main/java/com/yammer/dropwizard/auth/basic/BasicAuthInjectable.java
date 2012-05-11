@@ -2,17 +2,15 @@ package com.yammer.dropwizard.auth.basic;
 
 import com.google.common.base.Optional;
 import com.sun.jersey.api.core.HttpContext;
+import com.sun.jersey.core.util.Base64;
 import com.sun.jersey.server.impl.inject.AbstractHttpContextInjectable;
 import com.yammer.dropwizard.auth.AuthenticationException;
 import com.yammer.dropwizard.auth.Authenticator;
-import org.eclipse.jetty.util.B64Code;
-import org.eclipse.jetty.util.StringUtil;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
 
 class BasicAuthInjectable<T> extends AbstractHttpContextInjectable<T> {
     private static final String PREFIX = "Basic";
@@ -50,8 +48,7 @@ class BasicAuthInjectable<T> extends AbstractHttpContextInjectable<T> {
                 if (space > 0) {
                     final String method = header.substring(0, space);
                     if (PREFIX.equalsIgnoreCase(method)) {
-                        final String decoded = B64Code.decode(header.substring(space + 1),
-                                                              StringUtil.__ISO_8859_1);
+                        String decoded = Base64.base64Decode(header.substring(space + 1));
                         final int i = decoded.indexOf(':');
                         if (i > 0) {
                             final String username = decoded.substring(0, i);
@@ -66,8 +63,6 @@ class BasicAuthInjectable<T> extends AbstractHttpContextInjectable<T> {
                     }
                 }
             }
-        } catch (UnsupportedEncodingException e) {
-            BasicAuthProvider.LOG.debug(e, "Error decoding credentials");
         } catch (IllegalArgumentException e) {
             BasicAuthProvider.LOG.debug(e, "Error decoding credentials");
         } catch (AuthenticationException e) {
