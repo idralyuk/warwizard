@@ -7,11 +7,14 @@ import com.google.inject.Module;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import com.yammer.dropwizard.config.AdminConfiguration;
 import com.yammer.dropwizard.config.Configuration;
 import com.yammer.dropwizard.config.ConfigurationFactory;
 import com.yammer.dropwizard.config.LoggingFactory;
 import com.yammer.dropwizard.jersey.DropwizardGuiceContainer;
 import com.yammer.dropwizard.lifecycle.Lifecycle;
+import com.yammer.dropwizard.servlets.BasicAuthFilter;
+import com.yammer.metrics.reporting.AdminServlet;
 
 import javax.servlet.ServletContextEvent;
 import java.lang.reflect.ParameterizedType;
@@ -64,6 +67,11 @@ public abstract class AbstractService<T extends Configuration> extends GuiceServ
                 bind(GuiceContainer.class).to(DropwizardGuiceContainer.class);
                 bind(Lifecycle.class).toInstance(lifecycle);
                 bind(getConfigurationClass()).toInstance(conf);
+                if (conf.getAdminConfiguration().isPresent()) {
+                    AdminConfiguration adminConf = conf.getAdminConfiguration().get();
+                    filter("/admin/*").through(new BasicAuthFilter(adminConf.getUsername(), adminConf.getPassword()));
+                    serve("/admin/*").with(new AdminServlet());
+                }
                 serve("/*").with(GuiceContainer.class);
             }
         }), createModules(conf)));

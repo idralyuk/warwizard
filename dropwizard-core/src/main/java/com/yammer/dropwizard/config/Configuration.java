@@ -1,5 +1,6 @@
 package com.yammer.dropwizard.config;
 
+import com.google.common.base.Optional;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import javax.validation.Valid;
@@ -47,6 +48,10 @@ public class Configuration {
     @NotNull
     @JsonProperty
     private LoggingConfiguration logging = new LoggingConfiguration();
+
+    @Valid
+    @JsonProperty
+    private AdminConfiguration admin;
     /**
      * Returns the logging-specific section of the configuration file.
      *
@@ -54,5 +59,9 @@ public class Configuration {
      */
     public LoggingConfiguration getLoggingConfiguration() {
         return logging;
+    }
+
+    public Optional<AdminConfiguration> getAdminConfiguration() {
+        return Optional.fromNullable(admin);
     }
 }
