@@ -14,7 +14,10 @@ import com.yammer.dropwizard.config.LoggingFactory;
 import com.yammer.dropwizard.jersey.DropwizardGuiceContainer;
 import com.yammer.dropwizard.lifecycle.Lifecycle;
 import com.yammer.dropwizard.servlets.BasicAuthFilter;
+import com.yammer.metrics.HealthChecks;
+import com.yammer.metrics.core.HealthCheckRegistry;
 import com.yammer.metrics.reporting.AdminServlet;
+import com.yammer.metrics.util.DeadlockHealthCheck;
 
 import javax.servlet.ServletContextEvent;
 import java.lang.reflect.ParameterizedType;
@@ -72,6 +75,8 @@ public abstract class AbstractService<T extends Configuration> extends GuiceServ
                     filter("/admin/*").through(new BasicAuthFilter(adminConf.getUsername(), adminConf.getPassword()));
                     serve("/admin/*").with(new AdminServlet());
                 }
+                bind(HealthCheckRegistry.class).toInstance(HealthChecks.defaultRegistry());
+                HealthChecks.defaultRegistry().register(new DeadlockHealthCheck());
                 serve("/*").with(GuiceContainer.class);
             }
         }), createModules(conf)));
