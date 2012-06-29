@@ -23,6 +23,9 @@ import javax.servlet.ServletContextEvent;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
+import java.util.SortedMap;
 
 public abstract class AbstractService<T extends Configuration> extends GuiceServletContextListener {
     static {
@@ -32,20 +35,17 @@ public abstract class AbstractService<T extends Configuration> extends GuiceServ
     protected abstract String getConfigurationLocation();
 
     @SuppressWarnings("unchecked")
-    protected Class<T> getConfigurationClass() {Type t = getClass();
+    public final Class<T> getConfigurationClass() {
+        Type t = getClass();
         while (t instanceof Class<?>) {
             t = ((Class<?>) t).getGenericSuperclass();
         }
-        /* This is not guaranteed to work for all cases with convoluted piping
-         * of type parameters: but it can at least resolve straight-forward
-         * extension with single type parameter (as per [Issue-89]).
-         * And when it fails to do that, will indicate with specific exception.
-         */
+        // Similar to [Issue-89] (see {@link com.yammer.dropwizard.cli.ConfiguredCommand#getConfigurationClass})
         if (t instanceof ParameterizedType) {
             // should typically have one of type parameters (first one) that matches:
             for (Type param : ((ParameterizedType) t).getActualTypeArguments()) {
                 if (param instanceof Class<?>) {
-                    Class<?> cls = (Class<?>) param;
+                    final Class<?> cls = (Class<?>) param;
                     if (Configuration.class.isAssignableFrom(cls)) {
                         return (Class<T>) cls;
                     }

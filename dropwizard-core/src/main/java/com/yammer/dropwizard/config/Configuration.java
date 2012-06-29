@@ -43,15 +43,15 @@ import javax.validation.constraints.NotNull;
  */
 @SuppressWarnings("FieldMayBeFinal")
 public class Configuration {
-
     @Valid
     @NotNull
     @JsonProperty
-    private LoggingConfiguration logging = new LoggingConfiguration();
+    protected LoggingConfiguration logging = new LoggingConfiguration();
 
     @Valid
     @JsonProperty
     private AdminConfiguration admin;
+
     /**
      * Returns the logging-specific section of the configuration file.
      *

@@ -29,7 +29,7 @@ public class DropwizardGuiceContainer extends GuiceContainer {
     @Override
     protected ResourceConfig getDefaultResourceConfig(Map<String, Object> props,
                                                       WebConfig webConfig) throws ServletException {
-        return new DropwizardResourceConfig();
+        return new DropwizardResourceConfig(/*testOnly=*/false);
     }
 
 }

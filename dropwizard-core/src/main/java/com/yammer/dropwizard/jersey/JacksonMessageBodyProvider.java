@@ -3,8 +3,8 @@ package com.yammer.dropwizard.jersey;
 import com.google.common.collect.ImmutableList;
 import com.yammer.dropwizard.json.Json;
 import com.yammer.dropwizard.logging.Log;
+import com.yammer.dropwizard.validation.InvalidEntityException;
 import com.yammer.dropwizard.validation.Validator;
-import org.codehaus.jackson.JsonProcessingException;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -12,7 +12,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
@@ -36,22 +35,6 @@ public class JacksonMessageBodyProvider implements MessageBodyReader<Object>,
                                                    MessageBodyWriter<Object> {
     private static final Log LOG = Log.forClass(JacksonMessageBodyProvider.class);
     private static final Validator VALIDATOR = new Validator();
-    private static final Response.StatusType UNPROCESSABLE_ENTITY = new Response.StatusType() {
-        @Override
-        public int getStatusCode() {
-            return 422;
-        }
-
-        @Override
-        public Response.Status.Family getFamily() {
-            return Response.Status.Family.CLIENT_ERROR;
-        }
-
-        @Override
-        public String getReasonPhrase() {
-            return "Unprocessable Entity";
-        }
-    };
 
     private final Json json;
 
@@ -83,25 +66,15 @@ public class JacksonMessageBodyProvider implements MessageBodyReader<Object>,
         if (validating) {
             final ImmutableList<String> errors = VALIDATOR.validate(value);
             if (!errors.isEmpty()) {
-                final StringBuilder msg = new StringBuilder("The request entity had the following errors:\n");
-                for (String error : errors) {
-                    msg.append("  * ").append(error).append('\n');
-                }
-                throw new WebApplicationException(Response.status(UNPROCESSABLE_ENTITY)
-                                                          .entity(msg.toString())
-                                                          .type(MediaType.TEXT_PLAIN_TYPE)
-                                                          .build());
+                throw new InvalidEntityException("The request entity had the following errors:",
+                                                 errors);
             }
         }
         return value;
     }
 
     private Object parseEntity(Type genericType, InputStream entityStream) throws IOException {
-        try {
-            return json.readValue(entityStream, genericType);
-        } catch (JsonProcessingException e) {
-            throw new WebApplicationException(e, Response.Status.BAD_REQUEST);
-        }
+        return json.readValue(entityStream, genericType);
     }
 
     @Override

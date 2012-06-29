@@ -4,13 +4,40 @@
 Release Notes
 #############
 
+.. _rel-0.4.2:
+
+v0.4.2: Jun 20 2012
+===================
+
+* Fixed ``JsonProcessingExceptionMapper``. Now returns human-readable error messages for malformed
+  or invalid JSON as a ``400 Bad Request``. Also handles problems with JSON generation and object
+  mapping in a developer-friendly way.
+
 .. _rel-0.4.1:
 
-v0.4.1-SNAPSHOT
-===============
+v0.4.1: Jun 19 2012
+===================
 
 * Fixed type parameter resolution in for subclasses of subclasses of ``ConfiguredCommand``.
-
+* Upgraded to Jackson 1.9.7.
+* Upgraded to Logback 1.0.6, with asynchronous logging.
+* Upgraded to Hibernate Validator 4.3.0.
+* Upgraded to JDBI 2.34.
+* Upgraded to Jetty 8.1.4.
+* Added ``logging.console.format``, ``logging.file.format``, and ``logging.syslog.format``
+  parameters for custom log formats.
+* Extended ``ResourceTest`` to allow for enabling/disabling specific Jersey features.
+* Made ``Configuration`` serializable as JSON.
+* Stopped lumping command-line options in a group in ``Command``.
+* Fixed ``java.util.logging`` level changes.
+* Upgraded to Apache HttpClient 4.2.
+* Improved performance of ``AssetServlet``.
+* Added ``withBundle`` to ``ScalaService`` to enable bundle mix-ins.
+* Upgraded to SLF4J 1.6.6.
+* Enabled configuration-parameterized Jersey containers.
+* Upgraded to Jackson Guava 1.9.1, with support for ``Optional``.
+* Fixed error message in ``AssetBundle``.
+* Fixed ``WebApplicationException``s being thrown by ``JerseyClient``.
 
 .. _rel-0.4.0:
 
