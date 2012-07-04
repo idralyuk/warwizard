@@ -1,6 +1,7 @@
 package com.yammer.dropwizard;
 
 import com.google.common.collect.Iterables;
+import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -11,11 +12,13 @@ import com.yammer.dropwizard.config.AdminConfiguration;
 import com.yammer.dropwizard.config.Configuration;
 import com.yammer.dropwizard.config.ConfigurationFactory;
 import com.yammer.dropwizard.config.LoggingFactory;
-import com.yammer.dropwizard.jersey.DropwizardGuiceContainer;
+import com.yammer.dropwizard.jersey.*;
+import com.yammer.dropwizard.jersey.caching.CacheControlledResourceMethodDispatchAdapter;
 import com.yammer.dropwizard.lifecycle.Lifecycle;
 import com.yammer.dropwizard.servlets.BasicAuthFilter;
 import com.yammer.metrics.HealthChecks;
 import com.yammer.metrics.core.HealthCheckRegistry;
+import com.yammer.metrics.jersey.InstrumentedResourceMethodDispatchAdapter;
 import com.yammer.metrics.reporting.AdminServlet;
 import com.yammer.metrics.util.DeadlockHealthCheck;
 
@@ -23,9 +26,6 @@ import javax.servlet.ServletContextEvent;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
-import java.util.Arrays;
-import java.util.List;
-import java.util.SortedMap;
 
 public abstract class AbstractService<T extends Configuration> extends GuiceServletContextListener {
     static {
@@ -68,6 +68,15 @@ public abstract class AbstractService<T extends Configuration> extends GuiceServ
             @Override
             protected void configureServlets() {
                 bind(GuiceContainer.class).to(DropwizardGuiceContainer.class);
+
+                // Bind Jersey @Provider classes
+                bindCatchallExceptionMapper(binder());
+                bind(InvalidEntityExceptionMapper.class);
+                bind(JsonProcessingExceptionMapper.class);
+                bind(InstrumentedResourceMethodDispatchAdapter.class).toInstance(new InstrumentedResourceMethodDispatchAdapter());
+                bind(CacheControlledResourceMethodDispatchAdapter.class);
+                bind(OptionalQueryParamInjectableProvider.class);
+
                 bind(Lifecycle.class).toInstance(lifecycle);
                 bind(getConfigurationClass()).toInstance(conf);
                 if (conf.getAdminConfiguration().isPresent()) {
@@ -80,6 +89,11 @@ public abstract class AbstractService<T extends Configuration> extends GuiceServ
                 serve("/*").with(GuiceContainer.class);
             }
         }), createModules(conf)));
+    }
+
+    protected void bindCatchallExceptionMapper(Binder binder) {
+        // create a subclass to pin it to Throwable
+        binder.bind(LoggingExceptionMapper.class).toInstance(new LoggingExceptionMapper<Throwable>() {});
     }
 
     protected abstract Iterable<Module> createModules(T configuration);

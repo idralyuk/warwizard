@@ -1,6 +1,7 @@
 package com.yammer.dropwizard.jersey;
 
 import com.google.common.base.Splitter;
+import com.google.inject.Singleton;
 import com.yammer.dropwizard.logging.Log;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonProcessingException;
@@ -10,9 +11,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.StringWriter;
 
+@Provider
+@Singleton
 public class JsonProcessingExceptionMapper implements ExceptionMapper<JsonProcessingException> {
     private static final Log LOG = Log.forClass(JsonProcessingExceptionMapper.class);
     private static final Splitter LINE_SPLITTER = Splitter.on("\n").trimResults();

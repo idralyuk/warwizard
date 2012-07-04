@@ -1,5 +1,6 @@
 package com.yammer.dropwizard.jersey;
 
+import com.google.inject.Singleton;
 import com.yammer.dropwizard.logging.Log;
 import com.yammer.dropwizard.validation.InvalidEntityException;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 @Provider
+@Singleton
 public class InvalidEntityExceptionMapper implements ExceptionMapper<InvalidEntityException> {
     private static final Log LOG = Log.forClass(InvalidEntityExceptionMapper.class);
     private static final int UNPROCESSABLE_ENTITY = 422;

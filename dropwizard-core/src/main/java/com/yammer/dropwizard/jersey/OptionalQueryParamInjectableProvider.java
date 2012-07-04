@@ -1,6 +1,7 @@
 package com.yammer.dropwizard.jersey;
 
 import com.google.common.base.Optional;
+import com.google.inject.Singleton;
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
@@ -13,6 +14,7 @@ import javax.ws.rs.ext.Provider;
 // TODO: 11/14/11 <coda> -- test OptionalQueryParamInjectableProvider
 // TODO: 11/14/11 <coda> -- document OptionalQueryParamInjectableProvider
 
+@Singleton
 @Provider
 public class OptionalQueryParamInjectableProvider implements InjectableProvider<QueryParam, Parameter> {
     @Override
