@@ -2,6 +2,7 @@ package com.example.helloworld.resources;
 
 import com.example.helloworld.core.Person;
 import com.example.helloworld.db.PeopleDAO;
+import com.google.inject.Inject;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -16,6 +17,7 @@ public class PeopleResource {
 
     private final PeopleDAO peopleDAO;
 
+    @Inject
     public PeopleResource(PeopleDAO peopleDAO) {
         this.peopleDAO = peopleDAO;
     }

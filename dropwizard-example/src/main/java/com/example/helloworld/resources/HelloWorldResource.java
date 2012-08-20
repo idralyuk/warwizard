@@ -3,12 +3,17 @@ package com.example.helloworld.resources;
 import com.example.helloworld.core.Saying;
 import com.example.helloworld.core.Template;
 import com.google.common.base.Optional;
+import com.google.inject.Inject;
 import com.yammer.dropwizard.jersey.caching.CacheControl;
 import com.yammer.dropwizard.logging.Log;
 import com.yammer.metrics.annotation.Timed;
 
 import javax.validation.Valid;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -21,6 +26,7 @@ public class HelloWorldResource {
     private final Template template;
     private final AtomicLong counter;
 
+    @Inject
     public HelloWorldResource(Template template) {
         this.template = template;
         this.counter = new AtomicLong();

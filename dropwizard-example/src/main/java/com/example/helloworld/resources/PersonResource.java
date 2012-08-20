@@ -2,6 +2,7 @@ package com.example.helloworld.resources;
 
 import com.example.helloworld.core.Person;
 import com.example.helloworld.db.PeopleDAO;
+import com.google.inject.Inject;
 import com.yammer.dropwizard.jersey.params.LongParam;
 
 import javax.ws.rs.GET;
@@ -16,6 +17,7 @@ public class PersonResource {
 
     private final PeopleDAO peopleDAO;
 
+    @Inject
     public PersonResource(PeopleDAO peopleDAO) {
         this.peopleDAO = peopleDAO;
     }

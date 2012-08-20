@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+  <Call name="setAttribute">
+    <!-- Disable scanning of all classes on the classpath for annotations. This reduces startup time
+         from 50 seconds to 2. -->
+    <Arg>org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern</Arg>
+    <Arg>i_match_nothing_to_disable_jar_scanning_and_reduce_startup_time$</Arg>
+  </Call>
+</Configure>
