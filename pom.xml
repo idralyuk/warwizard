@@ -7,7 +7,7 @@
 
     <groupId>com.plausiblelabs.warwizard</groupId>
     <artifactId>warwizard-parent</artifactId>
-    <version>0.4.5</version>
+    <version>0.4.6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Warwizard Project</name>
     <url>https://github.com/plausiblelabs/warwizard</url>
