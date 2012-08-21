@@ -3,18 +3,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.yammer.dropwizard</groupId>
-        <artifactId>dropwizard-parent</artifactId>
-        <version>0.4.4-SNAPSHOT</version>
+        <groupId>com.plausiblelabs.warwizard</groupId>
+        <artifactId>warwizard-parent</artifactId>
+        <version>0.4.5-SNAPSHOT</version>
     </parent>
 
-    <artifactId>dropwizard-auth</artifactId>
-    <name>Dropwizard Authentication</name>
+    <artifactId>warwizard-auth</artifactId>
+    <name>Warwizard Authentication</name>
 
     <dependencies>
         <dependency>
-            <groupId>com.yammer.dropwizard</groupId>
-            <artifactId>dropwizard-core</artifactId>
+            <groupId>com.plausiblelabs.warwizard</groupId>
+            <artifactId>warwizard-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

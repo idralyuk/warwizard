@@ -1,22 +1,7 @@
-Dropwizard
+Warwizard
 ==========
 
-*Dropwizard is a sneaky way of making fast Java or Scala web services.*
+Warwizard is a rejiggering of Dropwizard, a Java framework for developing ops-friendly, high-performance, RESTful web services. Warwizard makes Dropwizard deployable as a war file, in our case to allow it to be used on Amazon's Elastic Beanstalk.
 
-It's a little bit of opinionated glue code which bangs together a set of libraries which have
-historically not sucked:
-
-* [Jetty](http://www.eclipse.org/jetty/) for HTTP servin'.
-* [Jersey](http://jersey.java.net/) for REST modelin'.
-* [Jackson](http://jackson.codehaus.org) for JSON parsin' and generatin'.
-* [Logback](http://logback.qos.ch/) for loggin'.
-* [Hibernate Validator](http://www.hibernate.org/subprojects/validator.html) for validatin'.
-* [Metrics](https://github.com/codahale/metrics) for figurin' out what your service is doing in
-  production.
-* [SnakeYAML](http://code.google.com/p/snakeyaml/) for YAML parsin' and configuratin'.
-
-[Yammer](https://www.yammer.com)'s high-performance, low-latency, Java and Scala services all use
-Dropwizard. In fact, Dropwizard is really just a simple extraction of
-[Yammer](https://www.yammer.com)'s glue code.
-
-Read more at [dropwizard.codahale.com](http://dropwizard.codahale.com).
+You probably don't care about Warwizard unless you like the cut of Dropwizard's jib but need to deploy in a .war. Find out
+more about Dropwizard at [dropwizard.codahale.com](http://dropwizard.codahale.com).

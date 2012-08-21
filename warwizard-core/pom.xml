@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.yammer.dropwizard</groupId>
-        <artifactId>dropwizard-parent</artifactId>
-        <version>0.4.4-SNAPSHOT</version>
+        <groupId>com.plausiblelabs.warwizard</groupId>
+        <artifactId>warwizard-parent</artifactId>
+        <version>0.4.5-SNAPSHOT</version>
     </parent>
 
-    <artifactId>dropwizard-core</artifactId>
-    <name>Dropwizard</name>
+    <artifactId>warwizard-core</artifactId>
+    <name>Warwizard</name>
 
     <properties>
         <jackson.version>1.9.7</jackson.version>
